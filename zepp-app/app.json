@@ -10,7 +10,7 @@
   "app": {
     "appId": 1000001,
     "appType": "app",
-    "appName": "Health Extractor",
+    "appName": "HealthExtractor",
     "version": {
       "code": 1,
       "name": "1.0.0"
@@ -33,7 +33,7 @@
       ]
     },
     "app-side": {
-      "path": "app-side/index.js"
+      "path": "app-side/index"
     }
   },
   "targets": {
@@ -41,7 +41,7 @@
       "platforms": [
         {
           "name": "gtr4",
-          "deviceSource": 226
+          "deviceSource": 7995648
         }
       ],
       "designWidth": 466,
@@ -50,6 +50,31 @@
           "pages": [
             "page/index"
           ]
+        },
+        "app-side": {
+          "path": "app-side/index"
+        }
+      }
+    },
+    "gtr3": {
+      "platforms": [
+        {
+          "name": "gtr3",
+          "deviceSource": 226
+        },
+        {
+          "name": "gtr3-w",
+          "deviceSource": 227
+        }
+      ],
+      "module": {
+        "page": {
+          "pages": [
+            "page/index"
+          ]
+        },
+        "app-side": {
+          "path": "app-side/index"
         }
       }
     }

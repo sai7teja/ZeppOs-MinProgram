@@ -1,0 +1,18 @@
+{
+  "name": "healthextractor",
+  "version": "1.0.0",
+  "description": "Continuous health data extractor for Zepp OS",
+  "scripts": {
+    "dev": "zeus dev",
+    "build": "zeus build",
+    "preview": "zeus preview"
+  },
+  "dependencies": {
+    "@zeppos/zml": "^0.0.43",
+    "canvas": "^3.2.3",
+    "jimp": "^1.6.1"
+  },
+  "devDependencies": {
+    "@zeppos/device-types": "^4.0.0"
+  }
+}
