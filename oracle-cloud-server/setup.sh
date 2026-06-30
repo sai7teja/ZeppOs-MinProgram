@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 echo "Opening port 4080 in Oracle UFW firewall (if applicable)..."
 sudo ufw allow 4080/tcp
-sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 4080 -j ACCEPT
+sudo iptables -I INPUT -m state --state NEW -p tcp --dport 4080 -j ACCEPT
 sudo netfilter-persistent save
 
 echo "Setup complete. You can run the server manually for testing using:"

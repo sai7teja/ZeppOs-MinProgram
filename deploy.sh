@@ -65,7 +65,7 @@ ssh -i ${SSH_KEY_PATH} -o StrictHostKeyChecking=no ${ORACLE_USER}@${ORACLE_IP} <
     ./venv/bin/pip install -r requirements.txt
 
     # Open Linux Firewall (iptables) for Port 4080
-    sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 4080 -j ACCEPT
+    sudo iptables -I INPUT -m state --state NEW -p tcp --dport 4080 -j ACCEPT
     sudo netfilter-persistent save || true
 
     # Start the daemon
