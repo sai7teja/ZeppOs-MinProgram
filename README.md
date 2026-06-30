@@ -39,6 +39,22 @@ zeus bridge
 
 For detailed architecture diagrams and design choices, see [architecture.md](architecture.md).
 
+## Current State of the Project
+As of right now, the infrastructure pipeline is **100% complete and deployed**:
+1. **The Backend:** A Python Flask server is actively running on the Oracle Cloud Virtual Machine (`68.233.103.229:4080`) listening for HTTP POST requests. It successfully connects to Google BigQuery using a secure Service Account Key hidden in `~/.secrets`.
+2. **The Front End:** The Zepp OS Mini Program (Watch UI + Smartphone Side Service) has been completely coded, configured for modern Zepp OS 3.0 standards, and is ready for execution.
+3. **The Simulator:** Because legacy hardware like the Amazfit GTR 2 does not support modern Zepp OS Mini Programs, the project is configured to run on the **Zepp OS Simulator** to emulate a GTR 4 and send real data payloads through the pipeline.
+
+## Complete Toolchain Installed
+During the development of this project, we successfully installed and configured the following toolchain on your local machine and remote servers:
+1. **Google Cloud SDK (`gcloud`):** Used to authenticate and programmatically create BigQuery datasets and Service Accounts from your local terminal.
+2. **Oracle Cloud Infrastructure CLI (`oci-cli`):** Installed via Python `pip`. We used this to automatically manipulate the Oracle Cloud VCN Security Lists to open port 4080 via script.
+3. **Node.js & NPM:** The core JavaScript runtime used to download dependencies and build the Zepp OS watch app.
+4. **Zepp OS Zeus CLI (`@zeppos/zeus-cli`):** The official compiler for Zepp OS 3.0. Installed globally on your machine to bypass WSL NTFS file-locking bugs.
+5. **Python 3, Flask, & Gunicorn:** Installed on the remote Oracle VM to serve as the highly concurrent production web server receiving the webhook data.
+6. **Iptables:** Configured on the Oracle Linux server to correctly expose port 4080 by inserting rules at the absolute top of the firewall chain.
+7. **Git (Personal Access Token):** Configured local Git to securely push changes using a GitHub PAT instead of a deprecated account password.
+
 ## Project Structure
 
 *   `deploy.sh`: The master deployment script. Automates GCP setup, Oracle VCN Security List updates, and Oracle VM deployment.
