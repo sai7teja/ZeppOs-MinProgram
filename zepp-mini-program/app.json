@@ -1,0 +1,43 @@
+{
+  "app": {
+    "appId": 1000001,
+    "appType": "app",
+    "appName": "Health Extractor",
+    "version": {
+      "code": 1,
+      "name": "1.0.0"
+    },
+    "icon": "icon.png",
+    "vender": "SaiTeja",
+    "description": "Extracts continuous health metrics to Oracle Cloud."
+  },
+  "permissions": [
+    "device:os.bg.service",
+    "data:os.device.info",
+    "data:os.sensor.pai",
+    "data:os.sensor.sleep",
+    "data:os.sensor.heartrate"
+  ],
+  "module": {
+    "page": {
+      "pages": [
+        "page/index"
+      ]
+    },
+    "app-side": {
+      "path": "app-side/index.js"
+    }
+  },
+  "targets": {
+    "amazfit-band-7": {
+      "module": {
+        "page": {
+          "pages": [
+            "page/index"
+          ]
+        }
+      }
+    }
+  },
+  "defaultLanguage": "en-US"
+}
