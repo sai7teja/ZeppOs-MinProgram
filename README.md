@@ -48,7 +48,12 @@ Because Zepp Health has multiple generations of smartwatches, you must follow th
 * **Status:** **Not Supported.** These devices run an older, proprietary RTOS (Amazfit OS). They do not support the modern Zepp OS API, JavaScript Side Services, or background HTTP bridging.
 * **How to Test Anyway (Simulator):** You cannot run this project on a physical GTR 2. Instead, test the full pipeline using the official Zepp OS Simulator on your computer. 
   1. Download the [Zepp OS Simulator](https://docs.zepp.com/docs/guides/tools/simulator/download/).
-  2. Run the interactive bridge:
+  2. Open the Simulator Manager and download the **GTR 4** device profile (as shown in the screenshots below).
+  
+  ![Simulator Device List](assets/Screenshot-1.png)
+  ![GTR 4 Download](assets/Screenshot-2%20.png)
+
+  3. Run the interactive bridge:
   ```bash
   cd zepp-mini-program
   zeus bridge
