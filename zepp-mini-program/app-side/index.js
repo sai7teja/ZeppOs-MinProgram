@@ -1,5 +1,4 @@
 import { BaseSideService } from '@zeppos/zml/base-side'
-import { fetch } from '@zeppos/fetch'
 
 // The IP Address of your Oracle VM
 const ORACLE_WEBHOOK_URL = 'http://68.233.103.229:4080/data'
@@ -17,6 +16,7 @@ AppSideService(
       if (req.method === 'SYNC_HEALTH_DATA') {
         const payload = req.body
 
+        // 'fetch' is globally available in the Zepp Side Service environment
         fetch({
           url: ORACLE_WEBHOOK_URL,
           method: 'POST',
