@@ -22,16 +22,40 @@ The `app.json` configuration file has been fully upgraded to comply with the Zep
 * `runtime` API version targeting `3.0`
 * Explicit `platforms` definitions mapped inside the `targets` block.
 
-### Hardware Requirements & Compatibility
-* **Supported Devices:** This mini-program relies on the Zepp OS `@zos/sensor` API and Side Service `fetch` capabilities. It requires a device running natively on **Zepp OS 2.0 or 3.0** (e.g., Amazfit GTR 4, GTS 4, Balance, Cheetah, Active).
-* **Unsupported Devices:** Legacy devices like the **Amazfit GTR 2** run proprietary Amazfit OS environments. While they have a legacy "Mini Program" menu, they do not support JavaScript Side Services or background HTTP requests, making them physically incompatible with this architecture.
+### ⌚ Hardware Compatibility & Build Guide
+Because Zepp Health has multiple generations of smartwatches, you must follow the instructions that match your physical hardware.
 
-### How to Test (Without Physical Hardware)
-If you do not have a compatible Zepp OS 3.0 smartwatch, the project is pre-configured for the **Amazfit GTR 4** and can be tested using the official Simulator:
-```bash
-cd zepp-mini-program
-zeus bridge
-```
+#### Category A: Modern Devices (Zepp OS 2.0 & 3.0)
+*(e.g., Amazfit GTR 4, GTS 4, Balance, Cheetah, Active, T-Rex Ultra)*
+* **Status:** Fully Supported. These devices natively support JavaScript Side Services and background `fetch` HTTP requests.
+* **Build Instructions:** The `app.json` file in this repository is pre-configured for Zepp OS 3.0 (targeting `gtr4`). You can build and install directly:
+  ```bash
+  cd zepp-mini-program
+  zeus preview
+  ```
+
+#### Category B: First-Gen Zepp OS Devices (Zepp OS 1.0)
+*(e.g., Amazfit GTR 3, GTS 3, T-Rex 2, Amazfit Band 7)*
+* **Status:** Supported, but requires downgrade. Zepp OS 1.0 supports basic Side Services but uses an older `app.json` schema. 
+* **Build Instructions:** Before building, you **must** modify `zepp-mini-program/app.json`:
+  1. Remove `"configVersion": "v3"`.
+  2. Change the `runtime` API version from `"3.0"` to `"1.0"`.
+  3. Change the target from `"gtr4"` to your device (e.g., `"band7"`).
+  4. Edit `package.json` to downgrade the types: `"@zeppos/device-types": "^2.0.0"`.
+
+#### Category C: Legacy Devices (Non-Zepp OS)
+*(e.g., Amazfit GTR 2, GTS 2, T-Rex Pro, Band 6)*
+* **Status:** **Not Supported.** These devices run an older, proprietary RTOS (Amazfit OS). They do not support the modern Zepp OS API, JavaScript Side Services, or background HTTP bridging.
+* **How to Test Anyway (Simulator):** You cannot run this project on a physical GTR 2. Instead, test the full pipeline using the official Zepp OS Simulator on your computer. 
+  1. Download the [Zepp OS Simulator](https://docs.zepp.com/docs/guides/tools/simulator/download/).
+  2. Run the interactive bridge:
+  ```bash
+  cd zepp-mini-program
+  zeus bridge
+  # Inside the prompt, type:
+  # bridge$ connect
+  # bridge$ install
+  ```
 *This command connects to the Zepp OS Online Simulator, allowing you to emulate heart rate/sleep data on a virtual watch face and securely transmit it to the Oracle Cloud webhook.*
 2. **Oracle Cloud "Always Listening" Server:** An Oracle Cloud Always Free VM running a Python Flask application. It acts as a webhook receiver to catch data from the phone's Side Service.
 3. **Google Cloud BigQuery:** The Python server uses a Google Service Account to securely stream the formatted data into BigQuery.
