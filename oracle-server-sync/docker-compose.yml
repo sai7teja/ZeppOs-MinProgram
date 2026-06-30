@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  zepp-sync:
+    build: .
+    container_name: zepp-oracle-sync
+    restart: unless-stopped
+    volumes:
+      # Mount the token cache so it persists across container restarts
+      - ./.zepp_token_cache.json:/app/.zepp_token_cache.json
+      # Mount the GCP Service Account Key for authenticating with Secret Manager and BigQuery
+      - ./gcp-sa-key.json:/app/gcp-sa-key.json:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      # Tell the Google Cloud libraries exactly where to find the credentials
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-sa-key.json
