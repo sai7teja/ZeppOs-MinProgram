@@ -22,12 +22,17 @@ The `app.json` configuration file has been fully upgraded to comply with the Zep
 * `runtime` API version targeting `3.0`
 * Explicit `platforms` definitions mapped inside the `targets` block.
 
-To build and install the app on your watch:
+### Hardware Requirements & Compatibility
+* **Supported Devices:** This mini-program relies on the Zepp OS `@zos/sensor` API and Side Service `fetch` capabilities. It requires a device running natively on **Zepp OS 2.0 or 3.0** (e.g., Amazfit GTR 4, GTS 4, Balance, Cheetah, Active).
+* **Unsupported Devices:** Legacy devices like the **Amazfit GTR 2** run proprietary Amazfit OS environments. While they have a legacy "Mini Program" menu, they do not support JavaScript Side Services or background HTTP requests, making them physically incompatible with this architecture.
+
+### How to Test (Without Physical Hardware)
+If you do not have a compatible Zepp OS 3.0 smartwatch, the project is pre-configured for the **Amazfit GTR 4** and can be tested using the official Simulator:
 ```bash
 cd zepp-mini-program
-npm install
-zeus preview
+zeus bridge
 ```
+*This command connects to the Zepp OS Online Simulator, allowing you to emulate heart rate/sleep data on a virtual watch face and securely transmit it to the Oracle Cloud webhook.*
 2. **Oracle Cloud "Always Listening" Server:** An Oracle Cloud Always Free VM running a Python Flask application. It acts as a webhook receiver to catch data from the phone's Side Service.
 3. **Google Cloud BigQuery:** The Python server uses a Google Service Account to securely stream the formatted data into BigQuery.
 4. **Grafana Cloud:** Connects directly to BigQuery for visualization.

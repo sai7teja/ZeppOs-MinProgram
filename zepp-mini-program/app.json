@@ -37,13 +37,14 @@
     }
   },
   "targets": {
-    "amazfit-band-7": {
+    "gtr4": {
       "platforms": [
         {
-          "name": "amazfit-band-7",
-          "deviceSource": 260
+          "name": "gtr4",
+          "deviceSource": 226
         }
       ],
+      "designWidth": 466,
       "module": {
         "page": {
           "pages": [
