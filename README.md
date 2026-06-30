@@ -53,12 +53,14 @@ Because Zepp Health has multiple generations of smartwatches, you must follow th
   ![Simulator Device List](assets/Screenshot-1.png)
   ![GTR 4 Download](assets/Screenshot-2%20.png)
 
-  3. Run the interactive bridge:
+  3. In the Simulator UI, click the **Bridge** button at the top to enable the connection listener.
+  4. Run the interactive bridge in your terminal:
   ```bash
   cd zepp-mini-program
   zeus bridge
   # Inside the prompt, type:
   # bridge$ connect
+  # (You should see: [ℹ] successfully connected to Simulator)
   # bridge$ install
   ```
 *This command connects to the Zepp OS Online Simulator, allowing you to emulate heart rate/sleep data on a virtual watch face and securely transmit it to the Oracle Cloud webhook.*
