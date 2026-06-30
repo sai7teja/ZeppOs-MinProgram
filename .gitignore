@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Secrets & Keys
+*.json
+*.pem
+*.key
+*.p12
+.secret/
+secrets/
+.env.local
+
+# IDEs
+.idea/
+.vscode/
+*.swp
