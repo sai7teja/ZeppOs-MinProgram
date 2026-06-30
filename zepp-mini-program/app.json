@@ -1,4 +1,12 @@
 {
+  "configVersion": "v3",
+  "runtime": {
+    "apiVersion": {
+      "compatible": "3.0",
+      "target": "3.0",
+      "minVersion": "3.0"
+    }
+  },
   "app": {
     "appId": 1000001,
     "appType": "app",
@@ -30,6 +38,12 @@
   },
   "targets": {
     "amazfit-band-7": {
+      "platforms": [
+        {
+          "name": "amazfit-band-7",
+          "deviceSource": 260
+        }
+      ],
       "module": {
         "page": {
           "pages": [

@@ -5,7 +5,29 @@ This project extracts continuous health data (PAI, Sleep Scores, Workout History
 ## Architecture
 
 This project utilizes a 100% Free Tier hybrid architecture:
-1. **Zepp OS Mini Program (Device App & Side Service):** Runs on the smartwatch to collect sensor data and the companion phone app to send it externally.
+1. **Zepp OS Mini Program (Smartwatch App)**
+
+The smartwatch app is located in `zepp-mini-program/`. It extracts data via the `@zos/sensor` APIs and uses a Side Service to `fetch` the data to our Oracle Cloud server.
+
+### Important Build Instructions for Windows/WSL Users:
+Because of known NTFS file-extraction bugs in Node 22 and WSL, do **not** install the `@zeppos/zeus-cli` locally or use `npx`. 
+Instead, install the CLI globally:
+```bash
+npm install -g @zeppos/zeus-cli
+```
+
+### Zepp OS 3.0 Compliance
+The `app.json` configuration file has been fully upgraded to comply with the Zepp OS 3.0 schema:
+* `configVersion: "v3"`
+* `runtime` API version targeting `3.0`
+* Explicit `platforms` definitions mapped inside the `targets` block.
+
+To build and install the app on your watch:
+```bash
+cd zepp-mini-program
+npm install
+zeus preview
+```
 2. **Oracle Cloud "Always Listening" Server:** An Oracle Cloud Always Free VM running a Python Flask application. It acts as a webhook receiver to catch data from the phone's Side Service.
 3. **Google Cloud BigQuery:** The Python server uses a Google Service Account to securely stream the formatted data into BigQuery.
 4. **Grafana Cloud:** Connects directly to BigQuery for visualization.
