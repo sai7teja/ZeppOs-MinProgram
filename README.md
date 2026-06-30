@@ -14,14 +14,15 @@ For detailed architecture diagrams and design choices, see [architecture.md](arc
 
 ## Project Structure
 
-*   `deploy.sh`: The master deployment script. Automates GCP setup and Oracle VM deployment.
+*   `deploy.sh`: The master deployment script. Automates GCP setup, Oracle VCN Security List updates, and Oracle VM deployment.
 *   `/oracle-cloud-server`: Contains the Python Flask application and dependencies for the Oracle VM.
 *   `/zepp-mini-program`: Contains the JavaScript code for the Zepp OS smartwatch app.
+*   `.gitignore`: Prevents sensitive files (`.json`, `.key`, `.env`) from being uploaded to GitHub.
 
 ## Security & Best Practices
 
-*   **No Hardcoded Secrets:** The `.gitignore` prevents Google Cloud JSON keys from being committed.
-*   **Secure Deployment:** The `deploy.sh` script automatically places the Google JSON key into a hidden, permission-locked folder (`~/.secrets/`) on the production VM.
+*   **No Hardcoded Secrets:** The `.gitignore` strictly prevents Google Cloud JSON keys or Oracle `.pem` keys from being committed.
+*   **Secure Deployment:** The `deploy.sh` script automatically places the Google JSON key into a hidden, permission-locked folder (`~/.secrets/`) on the production VM and cleans up the local copy after transfer.
 *   **Least Privilege:** The created Google Service Account is strictly limited to the `BigQuery Data Editor` role.
 
 ## Quick Start (For Future Users)
@@ -39,6 +40,12 @@ chmod +x deploy.sh
 ./deploy.sh
 ```
 
-The script will automatically create your BigQuery datasets, generate a secure service account, transfer the code to your Oracle VM, configure the Ubuntu firewall, and launch the Python daemon.
+The script will automatically:
+1. Create your BigQuery datasets on GCP.
+2. Generate a secure service account JSON key.
+3. (Optional) Use the `oci-cli` to securely update your Oracle VCN Security List to allow inbound traffic on port 4080.
+4. Transfer the code to your Oracle VM.
+5. Configure the Ubuntu firewall (`iptables`).
+6. Launch the Python daemon securely utilizing the hidden service account key.
 
 To build and run the Zepp OS app, see the instructions inside the `zepp-mini-program/README.md`.
