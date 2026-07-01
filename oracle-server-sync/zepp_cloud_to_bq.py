@@ -81,11 +81,18 @@ def get_cached_token() -> tuple[str, str] | None:
         
     return data.get("app_token"), data.get("user_id")
 
+ZEPP_PAI_REGIONS = [
+    "api-mifit-de2.zepp.com",   # Europe
+    "api-mifit-us2.zepp.com",   # USA
+    "api-mifit-sg2.zepp.com",   # Singapore / Asia
+    "api-mifit-ru.zepp.com",    # Russia
+    "api-mifit-us2.huami.com",  # Legacy US
+    "api-mifit-de2.huami.com",  # Legacy EU
+    "api-mifit.huami.com"       # Global Fallback
+]
+
 def fetch_pai(app_token: str, user_id: str) -> list[dict]:
-    url = f"https://api-mifit-de2.zepp.com/users/{user_id}/events"
     headers = {"apptoken": app_token}
-    
-    # Fetch last 2 days
     now = dt.datetime.now()
     start = now - dt.timedelta(days=2)
     params = {
@@ -95,24 +102,32 @@ def fetch_pai(app_token: str, user_id: str) -> list[dict]:
         "to": int(now.timestamp() * 1000)
     }
     
-    resp = requests.get(url, headers=headers, params=params)
-    if resp.status_code == 401:
-        raise PermissionError("Token expired")
-    resp.raise_for_status()
-    
-    data = resp.json().get("data", [])
-    records = []
-    for item in data:
-        # Format for BigQuery
-        records.append({
-            "timestamp": dt.datetime.fromtimestamp(item["timestamp"]/1000, dt.timezone.utc).isoformat(),
-            "date": item.get("time", ""),
-            "total_pai": float(item.get("totalPai", 0)),
-            "daily_pai": float(item.get("dailyPai", 0)),
-            "max_hr": int(item.get("maxHr", 0)),
-            "rest_hr": int(item.get("restHr", 0))
-        })
-    return records
+    for region in ZEPP_PAI_REGIONS:
+        url = f"https://{region}/users/{user_id}/events"
+        try:
+            resp = requests.get(url, headers=headers, params=params, timeout=5)
+            if resp.status_code == 401:
+                raise PermissionError("Token expired")
+            
+            # If successful and data exists, we found the right region
+            if resp.status_code == 200:
+                data = resp.json().get("data", [])
+                if data:
+                    records = []
+                    for item in data:
+                        records.append({
+                            "timestamp": dt.datetime.fromtimestamp(item["timestamp"]/1000, dt.timezone.utc).isoformat(),
+                            "date": item.get("time", ""),
+                            "total_pai": float(item.get("totalPai", 0)),
+                            "daily_pai": float(item.get("dailyPai", 0)),
+                            "max_hr": 0,
+                            "rest_hr": 0
+                        })
+                    return records
+        except Exception:
+            pass
+            
+    return []
 
 def fetch_band_data(app_token: str, user_id: str) -> list[dict]:
     url = "https://api-mifit.huami.com/v1/data/band_data.json"
