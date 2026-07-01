@@ -66,7 +66,7 @@ jobs:
             echo '${{ secrets.GCP_SA_KEY_JSON }}' > gcp-sa-key.json
             
             # 6. Inject Grafana Cloud Credentials for the Alloy Monitoring Agent
-            echo 'GRAFANA_PROMETHEUS_URL=${{ secrets.GRAFANA_PROMETHEUS_URL }}' > .env
+            echo 'GRAFANA_PROMETHEUS_URL=${{ secrets.GRAFANA_PROMETHEUS_URL }}' >> .env
             echo 'GRAFANA_PROMETHEUS_USER=${{ secrets.GRAFANA_PROMETHEUS_USER }}' >> .env
             echo 'GRAFANA_LOKI_URL=${{ secrets.GRAFANA_LOKI_URL }}' >> .env
             echo 'GRAFANA_LOKI_USER=${{ secrets.GRAFANA_LOKI_USER }}' >> .env
