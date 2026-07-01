@@ -44,18 +44,30 @@ jobs:
           username: ${{ secrets.ORACLE_USERNAME }}
           key: ${{ secrets.ORACLE_SSH_KEY }}
           script: |
-            # Navigate to the project directory (adjust if your clone path is different)
-            cd ~/Zepp-OS/ZeppOs-MinProgram/oracle-server-sync
+            # 1. Install Docker and Git if they don't exist on the Oracle VM
+            if ! command -v docker &> /dev/null; then
+              sudo apt-get update -y
+              sudo apt-get install -y docker.io docker-compose-v2 git
+            fi
             
-            # Pull the latest changes from GitHub
+            # 2. Clone the repository if it doesn't exist
+            if [ ! -d "~/ZeppOs-MinProgram" ]; then
+              cd ~
+              git clone https://github.com/sai7teja/ZeppOs-MinProgram.git
+            fi
+            
+            # 3. Navigate to the project directory
+            cd ~/ZeppOs-MinProgram/oracle-server-sync
+            
+            # 4. Pull the latest changes from GitHub
             git pull origin main
             
-            # Inject the GCP Service Account Key securely from GitHub Secrets
+            # 5. Inject the GCP Service Account Key securely from GitHub Secrets
             echo '${{ secrets.GCP_SA_KEY_JSON }}' > gcp-sa-key.json
             
-            # Rebuild the Docker image and restart the daemon silently
-            docker compose build
-            docker compose up -d
+            # 6. Rebuild the Docker image and restart the daemon silently using sudo
+            sudo docker compose build
+            sudo docker compose up -d
             
-            # Clean up old unused images to save space
-            docker image prune -f
+            # 7. Clean up old unused images to save space
+            sudo docker image prune -f
