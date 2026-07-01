@@ -72,8 +72,11 @@ def get_cached_token() -> tuple[str, str] | None:
     if not TOKEN_CACHE.exists():
         return None
     with TOKEN_CACHE.open("r") as f:
-        data = json.load(f)
-        
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError:
+            return None
+            
     # Assume expired if older than 30 days
     updated = dt.datetime.fromisoformat(data["updated_at"])
     if (dt.datetime.now(dt.timezone.utc) - updated).days > 25:
