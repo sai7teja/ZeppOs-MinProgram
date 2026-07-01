@@ -14,6 +14,7 @@ services:
       - PYTHONUNBUFFERED=1
       # Tell the Google Cloud libraries exactly where to find the credentials
       - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-sa-key.json
+      - TZ=Asia/Kolkata
 
   grafana-alloy:
     image: grafana/alloy:latest
