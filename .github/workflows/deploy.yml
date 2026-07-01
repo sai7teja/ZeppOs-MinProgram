@@ -72,9 +72,15 @@ jobs:
             echo 'GRAFANA_LOKI_USER=${{ secrets.GRAFANA_LOKI_USER }}' >> .env
             echo 'GRAFANA_CLOUD_API_KEY=${{ secrets.GRAFANA_CLOUD_API_KEY }}' >> .env
             
-            # 7. Rebuild the Docker image and restart the daemon silently using sudo
+            # 7. Prevent Docker from creating the cache file as a directory
+            if [ -d ".zepp_token_cache.json" ]; then
+              sudo rm -rf .zepp_token_cache.json
+            fi
+            touch .zepp_token_cache.json
+            
+            # 8. Rebuild the Docker image and restart the daemon silently using sudo
             sudo docker compose --env-file .env build
             sudo docker compose --env-file .env up -d
             
-            # 8. Clean up old unused images to save space
+            # 9. Clean up old unused images to save space
             sudo docker image prune -f
