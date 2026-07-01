@@ -37,12 +37,19 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Safely Base64 Encode GCP Key
+        env:
+          GCP_KEY: ${{ secrets.GCP_SA_KEY_JSON }}
+        run: |
+          echo "GCP_B64=$(python -c "import os, base64; print(base64.b64encode(os.environ['GCP_KEY'].encode()).decode())")" >> $GITHUB_ENV
+
       - name: Deploy to Oracle VM via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.ORACLE_HOST }}
           username: ${{ secrets.ORACLE_USERNAME }}
           key: ${{ secrets.ORACLE_SSH_KEY }}
+          envs: GCP_B64
           script: |
             # 1. Install Docker and Git if they don't exist on the Oracle VM
             if ! command -v docker &> /dev/null; then
@@ -62,10 +69,8 @@ jobs:
             # 4. Pull the latest changes from GitHub
             git pull origin main
             
-            # 5. Inject the GCP Service Account Key securely from GitHub Secrets
-            cat << 'EOF' > gcp-sa-key.json
-            ${{ secrets.GCP_SA_KEY_JSON }}
-            EOF
+            # 5. Inject the GCP Service Account Key securely via Base64 to bypass all bash quoting bugs
+            echo "$GCP_B64" | base64 -d > gcp-sa-key.json
             
             # 6. Inject the Project Configuration (Non-sensitive routing vars)
             echo 'ZEPP_EMAIL=saiteja.wipro@gmail.com' > .env
