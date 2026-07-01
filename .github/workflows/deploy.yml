@@ -39,13 +39,10 @@ jobs:
     steps:
       - name: Deploy to Oracle VM via SSH
         uses: appleboy/ssh-action@v1.0.3
-        env:
-          GCP_SA_KEY_JSON: ${{ secrets.GCP_SA_KEY_JSON }}
         with:
           host: ${{ secrets.ORACLE_HOST }}
           username: ${{ secrets.ORACLE_USERNAME }}
           key: ${{ secrets.ORACLE_SSH_KEY }}
-          envs: GCP_SA_KEY_JSON
           script: |
             # 1. Install Docker and Git if they don't exist on the Oracle VM
             if ! command -v docker &> /dev/null; then
@@ -66,7 +63,9 @@ jobs:
             git pull origin main
             
             # 5. Inject the GCP Service Account Key securely from GitHub Secrets
-            echo "$GCP_SA_KEY_JSON" > gcp-sa-key.json
+            cat << 'EOF' > gcp-sa-key.json
+            ${{ secrets.GCP_SA_KEY_JSON }}
+            EOF
             
             # 6. Inject the Project Configuration (Non-sensitive routing vars)
             echo 'ZEPP_EMAIL=saiteja.wipro@gmail.com' > .env
