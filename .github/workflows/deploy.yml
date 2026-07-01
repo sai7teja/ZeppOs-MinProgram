@@ -65,6 +65,12 @@ jobs:
             # 5. Inject the GCP Service Account Key securely from GitHub Secrets
             echo '${{ secrets.GCP_SA_KEY_JSON }}' > gcp-sa-key.json
             
+            # 6. Inject the Project Configuration (Non-sensitive routing vars)
+            echo 'ZEPP_EMAIL=saiteja.wipro@gmail.com' > .env
+            echo 'GCP_PROJECT_ID=lazybot7' >> .env
+            echo 'GCP_SECRET_NAME=zepp-password' >> .env
+            echo 'BQ_DATASET=zepp_health_data' >> .env
+            
             # 6. Inject Grafana Cloud Credentials for the Alloy Monitoring Agent
             echo 'GRAFANA_PROMETHEUS_URL=${{ secrets.GRAFANA_PROMETHEUS_URL }}' >> .env
             echo 'GRAFANA_PROMETHEUS_USER=${{ secrets.GRAFANA_PROMETHEUS_USER }}' >> .env
