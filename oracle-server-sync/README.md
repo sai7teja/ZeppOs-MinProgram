@@ -48,47 +48,33 @@ You must store your Zepp account password in GCP Secret Manager. Do **not** hard
 echo -n "YourZeppPassword" | gcloud secrets create zepp-password --data-file=- --project=your-project-id
 ```
 
-### 3. Local Environment Setup
+### 3. CI/CD & Production Deployment
 
-Clone the repository and set up the virtual environment:
-```bash
-cd oracle-server-sync
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements-bq.txt
-```
+This pipeline is designed to be completely zero-touch and is deployed via GitHub Actions.
 
-Create a `.env` file for non-sensitive configurations:
-```bash
-# .env (This file is ignored by Git)
-ZEPP_EMAIL=your.email@gmail.com
-GCP_PROJECT_ID=your-project-id
-GCP_SECRET_NAME=zepp-password
-BQ_DATASET=zepp_health_data
-```
+**A. Add GitHub Secrets:**
+To authorize the deployment to your Oracle VM and authenticate with Google/Grafana, add the following secrets to your GitHub Repository:
 
-Authenticate the Oracle Server with Google Cloud:
-```bash
-gcloud auth application-default login
-```
+- **Oracle SSH Config:** `ORACLE_HOST`, `ORACLE_USERNAME`, `ORACLE_SSH_KEY`
+- **Google Cloud Auth:** `GCP_SA_KEY_JSON` (A Service Account Key with BigQuery Data Editor and Secret Manager Accessor roles)
+- **Grafana Cloud Telemetry:** `GRAFANA_PROMETHEUS_URL`, `GRAFANA_PROMETHEUS_USER`, `GRAFANA_LOKI_URL`, `GRAFANA_LOKI_USER`, `GRAFANA_CLOUD_API_KEY`
 
-### 4. Running the Pipeline
+**B. Deploy:**
+Simply commit and push your code to the `main` branch. GitHub Actions will automatically:
+1. Install Docker on the Oracle VM.
+2. Clone the repository.
+3. Build the Docker container.
+4. Launch both the `zepp-oracle-sync` daemon and the `grafana-alloy` sidecar.
 
-**Historical Backfill:**
-To fetch the last 1 year of data and backfill your BigQuery tables, run the backfill script once:
-```bash
-python zepp_bq_backfill.py
-```
-*(This script fetches data in 7-day chunks and sleeps between requests to strictly obey Zepp rate limits).*
+---
 
-**Continuous Sync (Production):**
-To start the continuous background daemon that fetches data every hour:
-```bash
-nohup python zepp_cloud_to_bq.py > sync.log 2>&1 &
-```
+## 📈 Grafana Cloud Telemetry
+This project includes a **Grafana Alloy** sidecar container (`config.alloy`) that automatically monitors the Oracle VM without exposing any ports:
+- **Host Metrics:** Tracks CPU, RAM, and Disk space of the Oracle VM.
+- **Docker Logs:** Streams all Python logs (`stdout`/`stderr`) directly into Grafana Loki, allowing you to search your live production logs from the Grafana dashboard.
 
 ---
 
 ## 🛡️ Security & Compliance
 - **.gitignore:** The `.env` and `.zepp_token_cache.json` files contain sensitive tokens and are excluded from version control.
-- **Secret Manager:** Ensure the service account running the Python script on the Oracle VM has the `Secret Manager Secret Accessor` IAM role.
+- **No Hardcoded Passwords:** The pipeline uses GitHub Secrets to inject environment variables securely during deployment.
