@@ -14,3 +14,27 @@ services:
       - PYTHONUNBUFFERED=1
       # Tell the Google Cloud libraries exactly where to find the credentials
       - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-sa-key.json
+
+  grafana-alloy:
+    image: grafana/alloy:latest
+    container_name: grafana-alloy-monitor
+    restart: unless-stopped
+    command:
+      - run
+      - /etc/alloy/config.alloy
+      - --storage.path=/var/lib/alloy/data
+      - --server.http.listen-addr=0.0.0.0:12345
+    volumes:
+      # Pass the config file to the container
+      - ./config.alloy:/etc/alloy/config.alloy:ro
+      # Allow Alloy to see Docker containers (to scrape their logs)
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Allow Alloy to read host metrics (CPU/RAM of the Oracle VM)
+      - /:/host:ro,rslave
+    environment:
+      # Wait for GitHub Actions to inject these into the .env file!
+      - GRAFANA_PROMETHEUS_URL
+      - GRAFANA_PROMETHEUS_USER
+      - GRAFANA_LOKI_URL
+      - GRAFANA_LOKI_USER
+      - GRAFANA_CLOUD_API_KEY

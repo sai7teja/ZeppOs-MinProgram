@@ -1,0 +1,54 @@
+// 1. Collect Host Metrics (CPU, Memory, Network of the Oracle VM)
+prometheus.exporter.unix "oracle_vm" {}
+
+prometheus.scrape "host_scraper" {
+  targets = prometheus.exporter.unix.oracle_vm.targets
+  forward_to = [prometheus.remote_write.grafana_cloud.receiver]
+}
+
+// 2. Discover Docker Containers for Logging
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+// 3. Extract container names and format them nicely for Grafana
+discovery.relabel "container_logs" {
+  targets = discovery.docker.containers.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex = "/(.*)"
+    target_label  = "container"
+  }
+}
+
+// 4. Scrape the Logs from the discovered Docker containers
+loki.source.docker "docker_logs" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.container_logs.output
+  forward_to = [loki.write.grafana_cloud.receiver]
+}
+
+// 5. Send Metrics to Grafana Cloud Prometheus
+prometheus.remote_write "grafana_cloud" {
+  endpoint {
+    url = sys.env("GRAFANA_PROMETHEUS_URL")
+    
+    basic_auth {
+      username = sys.env("GRAFANA_PROMETHEUS_USER")
+      password = sys.env("GRAFANA_CLOUD_API_KEY")
+    }
+  }
+}
+
+// 6. Send Logs to Grafana Cloud Loki
+loki.write "grafana_cloud" {
+  endpoint {
+    url = sys.env("GRAFANA_LOKI_URL")
+
+    basic_auth {
+      username = sys.env("GRAFANA_LOKI_USER")
+      password = sys.env("GRAFANA_CLOUD_API_KEY")
+    }
+  }
+}
