@@ -227,10 +227,11 @@ def main():
                 stream_to_bq(bq_client, BQ_TABLE_BAND, band_data)
                 
             except PermissionError:
-                # Token expired during request, delete cache to force refresh on next loop
+                # Token expired during request, empty cache to force refresh on next loop
                 LOG.warning("Token expired during API request. Invalidating cache.")
                 if TOKEN_CACHE.exists():
-                    TOKEN_CACHE.unlink()
+                    with TOKEN_CACHE.open("w") as f:
+                        f.write("{}")
                 time.sleep(10)
                 continue
                 
