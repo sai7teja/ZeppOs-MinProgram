@@ -1,0 +1,8 @@
+{
+  "name": "Zepp OS Health Extractor",
+  "description": "Continuous health data extraction pipeline and webhook receiver for Zepp OS smartwatches and BigQuery streaming",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
